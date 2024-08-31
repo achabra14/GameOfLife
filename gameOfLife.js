@@ -2,6 +2,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const pauseButton = document.getElementById('pauseButton');
+const speedSlider = document.getElementById('speedSlider');
+
 const cellSize = 10;
 const rows = 50;
 const cols = 50;
@@ -10,6 +13,8 @@ canvas.height = rows * cellSize;
 
 let grid = createGrid(rows, cols);
 let isPaused = true;
+let interval = getInterval();
+let lastTime = 0;
 
 function createGrid(rows, cols) {
     return Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -64,20 +69,17 @@ function countNeighbors(grid, x, y) {
     return neighbors;
 }
 
-function update() {
+
+function update(timestamp) {
     if (!isPaused) {
-        grid = getNextGeneration(grid);
-        drawGrid(grid);
+        if (timestamp - lastTime >= interval) {
+            grid = getNextGeneration(grid);
+            drawGrid(grid);
+            lastTime = timestamp;
+        }
     }
     requestAnimationFrame(update);
 }
-
-// function update() {
-//     const interval = 250;
-//     grid = getNextGeneration(grid);
-//     drawGrid(grid);
-//     setTimeout(update, interval);
-// }
 
 // Initialize with a random pattern
 function randomizeGrid() {
@@ -88,13 +90,19 @@ function randomizeGrid() {
     }
 }
 
+function getInterval() {
+    return 1000 - parseInt(speedSlider.value, 10);
+}
+
 pauseButton.addEventListener('click', () => {
     isPaused = !isPaused;
     pauseButton.textContent = isPaused ? 'Start' : 'Pause';
 });
 
-randomizeGrid();
-requestAnimationFrame(update);
+speedSlider.addEventListener('input', () => {
+    interval = getInterval();
+});
+
 
 canvas.addEventListener('click', (event) => {
     const x = Math.floor(event.offsetX / cellSize);
@@ -102,3 +110,6 @@ canvas.addEventListener('click', (event) => {
     grid[y][x] = grid[y][x] ? 0 : 1;
     drawGrid(grid);
 });
+
+randomizeGrid();
+requestAnimationFrame(update);
