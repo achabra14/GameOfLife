@@ -3,11 +3,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const pauseButton = document.getElementById('pauseButton');
+const clearButton = document.getElementById('clearButton');
 const speedSlider = document.getElementById('speedSlider');
 const generationCounter = document.getElementById('generationCounter');
+const rewindSlider = document.getElementById('rewindSlider');
 
 
-const cellSize = 10;
+const cellSize = 12;
 const rows = 50;
 const cols = 50;
 canvas.width = cols * cellSize;
@@ -46,7 +48,7 @@ function getNextGeneration(grid) {
 
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            const neighbors = countNeighbors(grid, row, col);
+            const neighbors = countNeighborsWithWrap(grid, row, col);
             const cell = grid[row][col];
 
             if (cell === 1 && (neighbors < 2 || neighbors > 3)) {
@@ -71,6 +73,19 @@ function countNeighbors(grid, x, y) {
             if (row >= 0 && row < rows && col >= 0 && col < cols) {
                 neighbors += grid[row][col];
             }
+        }
+    }
+    return neighbors;
+}
+
+function countNeighborsWithWrap(grid, x, y) {
+    let neighbors = 0;
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            const row = (x + i + rows) % rows;
+            const col = (y + j + cols) % cols;
+            neighbors += grid[row][col];
         }
     }
     return neighbors;
@@ -111,12 +126,21 @@ function update(timestamp) {
 
 // Initialize with a random pattern
 function randomizeGrid() {
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
+    for (let row = Math.floor(rows / 4); row < 3 * Math.floor(rows / 4); row++) {
+        for (let col = Math.floor(cols / 4); col < 3 * Math.floor(cols / 4); col++) {
             grid[row][col] = Math.random() < 0.3 ? 1 : 0;
         }
     }
+}
 
+function clearGrid() {
+    grid = createGrid(rows, cols);
+    drawGrid(grid);
+    generation = 0;
+    generationCounter.textContent = `Generations: ${generation}`;
+    history = [];
+    rewindSlider.max = generation;
+    rewindSlider.value = generation;
 }
 
 function getInterval() {
@@ -124,9 +148,20 @@ function getInterval() {
 }
 
 pauseButton.addEventListener('click', () => {
-    isPaused = !isPaused;
-    pauseButton.textContent = isPaused ? 'Start' : 'Pause';
+    if (isPaused) {
+        startGame();
+    } else {
+        pauseGame();
+    }
 });
+
+clearButton.addEventListener('click', () => {
+    clearGrid();
+    pauseGame();
+});
+
+
+
 
 speedSlider.addEventListener('input', () => {
     interval = getInterval();
