@@ -22,3 +22,9 @@ button {
     border: none;
     border-radius: 5px;
 }
+
+#generationCounter {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #fff;
+}

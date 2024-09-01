@@ -4,6 +4,8 @@ const ctx = canvas.getContext('2d');
 
 const pauseButton = document.getElementById('pauseButton');
 const speedSlider = document.getElementById('speedSlider');
+const generationCounter = document.getElementById('generationCounter');
+
 
 const cellSize = 10;
 const rows = 50;
@@ -15,6 +17,11 @@ let grid = createGrid(rows, cols);
 let isPaused = true;
 let interval = getInterval();
 let lastTime = 0;
+let generation = 0;
+
+let history = [];
+const maxHistory = 1000;
+
 
 function createGrid(rows, cols) {
     return Array.from({ length: rows }, () => new Array(cols).fill(0));
@@ -69,13 +76,34 @@ function countNeighbors(grid, x, y) {
     return neighbors;
 }
 
+function pauseGame() {
+    isPaused = true;
+    pauseButton.textContent = 'Start';
+}
+
+function startGame() {
+    isPaused = false;
+    pauseButton.textContent = 'Pause';
+}
+
 
 function update(timestamp) {
     if (!isPaused) {
         if (timestamp - lastTime >= interval) {
+            if (history.length >= maxHistory) {
+                history.shift();
+            }
             grid = getNextGeneration(grid);
+
+            history.push(grid.map(row => [...row])); // Store a deep copy of the grid
+
             drawGrid(grid);
+            generation++;
+            generationCounter.textContent = `Generations: ${generation}`;
             lastTime = timestamp;
+
+            rewindSlider.max = generation;
+            rewindSlider.value = generation;
         }
     }
     requestAnimationFrame(update);
@@ -88,6 +116,7 @@ function randomizeGrid() {
             grid[row][col] = Math.random() < 0.3 ? 1 : 0;
         }
     }
+
 }
 
 function getInterval() {
@@ -111,5 +140,15 @@ canvas.addEventListener('click', (event) => {
     drawGrid(grid);
 });
 
+rewindSlider.addEventListener('input', (event) => {
+    pauseGame();
+    const gen = parseInt(event.target.value, 10);
+    grid = history[gen - Math.max(0, generation - maxHistory)];
+    drawGrid(grid);
+    generationCounter.textContent = `Generations: ${gen}`;
+});
+
 randomizeGrid();
+drawGrid(grid);
+history.push(grid.map(row => [...row]))
 requestAnimationFrame(update);
