@@ -124,11 +124,19 @@ function update(timestamp) {
     requestAnimationFrame(update);
 }
 
-// Initialize with a random pattern
+// Randomizes the whole grid
 function randomizeGrid() {
-    for (let row = Math.floor(rows / 4); row < 3 * Math.floor(rows / 4); row++) {
-        for (let col = Math.floor(cols / 4); col < 3 * Math.floor(cols / 4); col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             grid[row][col] = Math.random() < 0.3 ? 1 : 0;
+        }
+    }
+}
+
+function addRandomPattern(len, height, x, y) {
+    for (let i = 0; i <= len; i++) {
+        for (let j = 0; j <= height; j++) {
+            grid[x + i][y + j] = Math.random() < 0.3 ? 1 : 0;
         }
     }
 }
@@ -183,7 +191,11 @@ rewindSlider.addEventListener('input', (event) => {
     generationCounter.textContent = `Generations: ${gen}`;
 });
 
-randomizeGrid();
+//randomizeGrid();
+const randomPatternSize = 5;
+addRandomPattern(randomPatternSize, randomPatternSize, 
+    Math.floor((rows - randomPatternSize) / 2), 
+    Math.floor((cols - randomPatternSize) / 2));
 drawGrid(grid);
 history.push(grid.map(row => [...row]))
 requestAnimationFrame(update);
