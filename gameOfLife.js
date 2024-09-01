@@ -21,6 +21,11 @@ let interval = getInterval();
 let lastTime = 0;
 let generation = 0;
 
+document.body.classList.add('dark-mode');
+document.querySelector('h1').classList.add('dark-mode');
+let aliveColor = '#FFF';
+let deadColor = '#000';
+
 let history = [];
 const maxHistory = 1000;
 
@@ -31,16 +36,32 @@ function createGrid(rows, cols) {
 
 function drawGrid(grid) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 0.25;
+    ctx.strokeStyle = '#AAA';
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             ctx.beginPath();
             ctx.rect(col * cellSize, row * cellSize, cellSize, cellSize);
-            ctx.fillStyle = grid[row][col] ? '#FFF' : '#000';
+            ctx.fillStyle = grid[row][col] ? aliveColor : deadColor;
             ctx.fill();
             ctx.stroke();
         }
     }
 }
+
+// function drawGridLines() {
+//     ctx.beginPath();
+//     ctx.strokeStyle = '#AAA';
+//     for (let i = 0; i <= rows; i++) {
+//         ctx.moveTo(0, i * cellSize);
+//         ctx.lineTo(cols * cellSize, i * cellSize);
+//     }
+//     for (let i = 0; i <= cols; i++) {
+//         ctx.moveTo(i * cellSize, 0);
+//         ctx.lineTo(i * cellSize, rows * cellSize);
+//     }
+//     ctx.stroke();
+// }
 
 
 function getNextGeneration(grid) {
@@ -169,8 +190,6 @@ clearButton.addEventListener('click', () => {
 });
 
 
-
-
 speedSlider.addEventListener('input', () => {
     interval = getInterval();
 });
@@ -191,11 +210,29 @@ rewindSlider.addEventListener('input', (event) => {
     generationCounter.textContent = `Generations: ${gen}`;
 });
 
+
+document.getElementById('darkModeButton').addEventListener('click', function() {
+    document.body.classList.toggle('light-mode');
+    document.body.classList.toggle('dark-mode');
+
+    const h1 = document.querySelector('h1');
+    if (h1) {
+        h1.classList.toggle('light-mode');
+        h1.classList.toggle('dark-mode');
+    }
+
+    aliveColor = aliveColor === '#FFF' ? '#000' : '#FFF';
+    deadColor = deadColor === '#000' ? '#FFF' : '#000';
+
+    drawGrid(grid);
+});
+
 //randomizeGrid();
 const randomPatternSize = 5;
 addRandomPattern(randomPatternSize, randomPatternSize, 
     Math.floor((rows - randomPatternSize) / 2), 
     Math.floor((cols - randomPatternSize) / 2));
 drawGrid(grid);
+//drawGridLines();
 history.push(grid.map(row => [...row]))
 requestAnimationFrame(update);
