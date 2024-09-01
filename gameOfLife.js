@@ -4,6 +4,7 @@ const ctx = canvas.getContext('2d');
 
 const playButton = document.getElementById('playButton');
 const clearButton = document.getElementById('clearButton');
+const randomButton = document.getElementById('randomButton');
 const speedSlider = document.getElementById('speedSlider');
 const generationCounter = document.getElementById('generationCounter');
 const rewindSlider = document.getElementById('rewindSlider');
@@ -99,7 +100,10 @@ function countNeighborsWithWrap(grid, x, y) {
 }
 
 function pauseGame() {
-    isPaused = true;
+    if (!isPaused) {
+        togglePlayPause();
+        isPaused = true;
+    }
 }
 
 function startGame() {
@@ -160,29 +164,34 @@ function getInterval() {
     return 1000 - parseInt(speedSlider.value, 10);
 }
 
-playButton.addEventListener('click', () => {
+function togglePlayPause() {
     const icon = playButton.querySelector('i');
     if (icon.classList.contains('fa-play')) {
         icon.classList.remove('fa-play');
         icon.classList.add('fa-pause');
-        startGame();
+        isPaused = false;
     } else {
         icon.classList.remove('fa-pause');
         icon.classList.add('fa-play');
-        pauseGame();
-        // Add code to pause the game
+        isPaused = true;
     }
+}
 
-    // if (isPaused) {
-    //     startGame();
-    // } else {
-    //     pauseGame();
-    // }
+playButton.addEventListener('click', () => {
+    togglePlayPause();
 });
 
 clearButton.addEventListener('click', () => {
     clearGrid();
     pauseGame();
+});
+
+randomButton.addEventListener('click', () => {
+    const randomPatternSize = 5;
+    addRandomPattern(randomPatternSize, randomPatternSize, 
+    Math.floor((rows - randomPatternSize) / 2), 
+    Math.floor((cols - randomPatternSize) / 2));
+    drawGrid(grid);
 });
 
 

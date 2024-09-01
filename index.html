@@ -11,14 +11,18 @@
     <h1>Conway's Game Of Life</h1>
     <canvas id="gameCanvas"></canvas>
     <button id="playButton"><i class="fas fa-play"></i></button>
-    <button id="clearButton">Clear</button>
+    <div id="generationCounter">Generations: 0</div>
+    <label for="rewindSlider">Rewind:</label>
+    <input type="range" id="rewindSlider" min="0" max="0" value="0">
+    <div class="button-row">
+        <button id="clearButton">Clear</button>
+        <button id="randomButton">Random</button>
+    </div>
+    
     <button id="darkModeButton">Light Mode</button>
     <label for="speedSlider">Speed:</label>
     <input type="range" id="speedSlider" min="0" max="1000" value="750">
-    <div id="generationCounter">Generations: 0</div>
-
-    <label for="rewindSlider">Rewind:</label>
-    <input type="range" id="rewindSlider" min="0" max="0" value="0">
+    
 
     <script src="gameOfLife.js"></script>
     
