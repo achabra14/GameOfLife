@@ -2,11 +2,12 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const pauseButton = document.getElementById('pauseButton');
+const playButton = document.getElementById('playButton');
 const clearButton = document.getElementById('clearButton');
 const speedSlider = document.getElementById('speedSlider');
 const generationCounter = document.getElementById('generationCounter');
 const rewindSlider = document.getElementById('rewindSlider');
+const darkModeBtn = document.getElementById('darkModeButton');
 
 
 const cellSize = 12;
@@ -21,10 +22,10 @@ let interval = getInterval();
 let lastTime = 0;
 let generation = 0;
 
-document.body.classList.add('dark-mode');
-document.querySelector('h1').classList.add('dark-mode');
-let aliveColor = '#FFF';
-let deadColor = '#000';
+//document.body.classList.add('dark-mode');
+let aliveColor = '#000';
+let deadColor = '#FFF';
+ctx.strokeStyle = deadColor;
 
 let history = [];
 const maxHistory = 1000;
@@ -37,7 +38,6 @@ function createGrid(rows, cols) {
 function drawGrid(grid) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineWidth = 0.25;
-    ctx.strokeStyle = '#AAA';
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             ctx.beginPath();
@@ -48,20 +48,6 @@ function drawGrid(grid) {
         }
     }
 }
-
-// function drawGridLines() {
-//     ctx.beginPath();
-//     ctx.strokeStyle = '#AAA';
-//     for (let i = 0; i <= rows; i++) {
-//         ctx.moveTo(0, i * cellSize);
-//         ctx.lineTo(cols * cellSize, i * cellSize);
-//     }
-//     for (let i = 0; i <= cols; i++) {
-//         ctx.moveTo(i * cellSize, 0);
-//         ctx.lineTo(i * cellSize, rows * cellSize);
-//     }
-//     ctx.stroke();
-// }
 
 
 function getNextGeneration(grid) {
@@ -114,12 +100,10 @@ function countNeighborsWithWrap(grid, x, y) {
 
 function pauseGame() {
     isPaused = true;
-    pauseButton.textContent = 'Start';
 }
 
 function startGame() {
     isPaused = false;
-    pauseButton.textContent = 'Pause';
 }
 
 
@@ -176,12 +160,24 @@ function getInterval() {
     return 1000 - parseInt(speedSlider.value, 10);
 }
 
-pauseButton.addEventListener('click', () => {
-    if (isPaused) {
+playButton.addEventListener('click', () => {
+    const icon = playButton.querySelector('i');
+    if (icon.classList.contains('fa-play')) {
+        icon.classList.remove('fa-play');
+        icon.classList.add('fa-pause');
         startGame();
     } else {
+        icon.classList.remove('fa-pause');
+        icon.classList.add('fa-play');
         pauseGame();
+        // Add code to pause the game
     }
+
+    // if (isPaused) {
+    //     startGame();
+    // } else {
+    //     pauseGame();
+    // }
 });
 
 clearButton.addEventListener('click', () => {
@@ -211,28 +207,34 @@ rewindSlider.addEventListener('input', (event) => {
 });
 
 
-document.getElementById('darkModeButton').addEventListener('click', function() {
-    document.body.classList.toggle('light-mode');
+darkModeBtn.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');
 
-    const h1 = document.querySelector('h1');
-    if (h1) {
-        h1.classList.toggle('light-mode');
-        h1.classList.toggle('dark-mode');
-    }
+    // TODO: Get this working
+    // if (document.body.classList.contains('dark-mode')) {
+    //     localStorage.setItem('mode', 'dark');
+    // } else {
+    //     localStorage.setItem('mode', 'light');
+    // }
 
     aliveColor = aliveColor === '#FFF' ? '#000' : '#FFF';
     deadColor = deadColor === '#000' ? '#FFF' : '#000';
+    ctx.strokeStyle = deadColor;
 
     drawGrid(grid);
 });
 
-//randomizeGrid();
+// window.addEventListener('load', function() {
+//     if (localStorage.getItem('mode') === 'dark') {
+//         document.body.classList.add('dark-mode');
+//     }
+// });
+
+
 const randomPatternSize = 5;
 addRandomPattern(randomPatternSize, randomPatternSize, 
     Math.floor((rows - randomPatternSize) / 2), 
     Math.floor((cols - randomPatternSize) / 2));
 drawGrid(grid);
-//drawGridLines();
 history.push(grid.map(row => [...row]))
 requestAnimationFrame(update);
