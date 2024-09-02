@@ -128,12 +128,14 @@ function update(timestamp) {
             if (history.length >= maxHistory) {
                 history.shift();
             }
-            grid = getNextGeneration(grid);
 
             history.push(grid.map(row => [...row])); // Store a deep copy of the grid
+            
+            grid = getNextGeneration(grid);
+
+            generation++;
 
             drawGrid(grid);
-            generation++;
             lastTime = timestamp;
 
             rewindSlider.max = generation;
@@ -164,7 +166,6 @@ function clearGrid() {
     grid = createGrid(rows, cols);
     drawGrid(grid);
     generation = 0;
-    //generationCounter.textContent = `Generations: ${generation}`;
     history = [];
     rewindSlider.max = generation;
     rewindSlider.value = generation;
@@ -184,6 +185,7 @@ function togglePlayPause() {
         icon.classList.remove('fa-pause');
         icon.classList.add('fa-play');
         isPaused = true;
+        history.push(grid.map(row => [...row]));
     }
 }
 
@@ -222,7 +224,6 @@ rewindSlider.addEventListener('input', (event) => {
     generation = parseInt(event.target.value, 10);
     grid = history[generation - Math.max(0, generation - maxHistory)];
     drawGrid(grid);
-    //generationCounter.textContent = `Generations: ${gen}`;
 });
 
 
@@ -269,5 +270,4 @@ addRandomPattern(randomPatternSize, randomPatternSize,
     Math.floor((rows - randomPatternSize) / 2), 
     Math.floor((cols - randomPatternSize) / 2));
 drawGrid(grid);
-history.push(grid.map(row => [...row]))
 requestAnimationFrame(update);
