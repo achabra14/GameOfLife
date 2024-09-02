@@ -22,7 +22,6 @@ let interval = getInterval();
 let lastTime = 0;
 let generation = 0;
 
-//document.body.classList.add('dark-mode');
 let aliveColor = '#000';
 let deadColor = '#FFF';
 ctx.strokeStyle = deadColor;
@@ -52,13 +51,12 @@ function drawGrid(grid) {
     ctx.textAlign = 'right';
     ctx.textBaseline = 'bottom';
 
-    // Calculate position for the text (bottom right corner)
-    const textX = canvas.width - 10; // 10 pixels from the right edge
-    const textY = canvas.height - 10; // 10 pixels from the bottom edge
+    const textX = canvas.width - 20;
+    const textY = canvas.height - 30;
 
-    // Draw the generation text
-    ctx.fillStyle = aliveColor; // Use the aliveColor for the text color
+    ctx.fillStyle = aliveColor;
     ctx.fillText(`Gen: ${generation}`, textX, textY);
+    ctx.fillText(`Pop: ${countPopulation(grid)}`, textX, textY + 20);
 }
 
 
@@ -108,6 +106,10 @@ function countNeighborsWithWrap(grid, x, y) {
         }
     }
     return neighbors;
+}
+
+function countPopulation(grid) {
+    return grid.flat().reduce((acc, cell) => acc + cell, 0);
 }
 
 function pauseGame() {
