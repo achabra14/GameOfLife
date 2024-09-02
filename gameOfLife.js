@@ -145,7 +145,7 @@ function randomizeGrid() {
 function addRandomPattern(len, height, x, y) {
     for (let i = 0; i <= len; i++) {
         for (let j = 0; j <= height; j++) {
-            grid[x + i][y + j] = Math.random() < 0.3 ? 1 : 0;
+            grid[x + i][y + j] = Math.random() < 0.5 ? 1 : 0;
         }
     }
 }
@@ -219,6 +219,18 @@ rewindSlider.addEventListener('input', (event) => {
 darkModeBtn.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');
 
+    if (document.body.classList.contains('dark-mode')) {
+        aliveColor = '#FFF';
+        deadColor = '#000';
+        darkModeBtn.textContent = 'Light Mode';
+    }
+    else {
+        aliveColor = '#000';
+        deadColor = '#FFF';
+        darkModeBtn.textContent = 'Dark Mode';
+    }
+
+
     // TODO: Get this working
     // if (document.body.classList.contains('dark-mode')) {
     //     localStorage.setItem('mode', 'dark');
@@ -226,8 +238,10 @@ darkModeBtn.addEventListener('click', function() {
     //     localStorage.setItem('mode', 'light');
     // }
 
-    aliveColor = aliveColor === '#FFF' ? '#000' : '#FFF';
-    deadColor = deadColor === '#000' ? '#FFF' : '#000';
+    // darkModeBtn.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+
+    // aliveColor = aliveColor === '#FFF' ? '#000' : '#FFF';
+    // deadColor = deadColor === '#000' ? '#FFF' : '#000';
     ctx.strokeStyle = deadColor;
 
     drawGrid(grid);
