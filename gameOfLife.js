@@ -6,7 +6,6 @@ const playButton = document.getElementById('playButton');
 const clearButton = document.getElementById('clearButton');
 const randomButton = document.getElementById('randomButton');
 const speedSlider = document.getElementById('speedSlider');
-const generationCounter = document.getElementById('generationCounter');
 const rewindSlider = document.getElementById('rewindSlider');
 const darkModeBtn = document.getElementById('darkModeButton');
 
@@ -48,6 +47,18 @@ function drawGrid(grid) {
             ctx.stroke();
         }
     }
+
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+
+    // Calculate position for the text (bottom right corner)
+    const textX = canvas.width - 10; // 10 pixels from the right edge
+    const textY = canvas.height - 10; // 10 pixels from the bottom edge
+
+    // Draw the generation text
+    ctx.fillStyle = aliveColor; // Use the aliveColor for the text color
+    ctx.fillText(`Gen: ${generation}`, textX, textY);
 }
 
 
@@ -123,7 +134,6 @@ function update(timestamp) {
 
             drawGrid(grid);
             generation++;
-            generationCounter.textContent = `Generations: ${generation}`;
             lastTime = timestamp;
 
             rewindSlider.max = generation;
@@ -154,7 +164,7 @@ function clearGrid() {
     grid = createGrid(rows, cols);
     drawGrid(grid);
     generation = 0;
-    generationCounter.textContent = `Generations: ${generation}`;
+    //generationCounter.textContent = `Generations: ${generation}`;
     history = [];
     rewindSlider.max = generation;
     rewindSlider.value = generation;
@@ -209,10 +219,10 @@ canvas.addEventListener('click', (event) => {
 
 rewindSlider.addEventListener('input', (event) => {
     pauseGame();
-    const gen = parseInt(event.target.value, 10);
-    grid = history[gen - Math.max(0, generation - maxHistory)];
+    generation = parseInt(event.target.value, 10);
+    grid = history[generation - Math.max(0, generation - maxHistory)];
     drawGrid(grid);
-    generationCounter.textContent = `Generations: ${gen}`;
+    //generationCounter.textContent = `Generations: ${gen}`;
 });
 
 
